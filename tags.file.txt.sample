@@ -1,0 +1,6 @@
+a_account = pus,test
+s_state = temporary,permanent
+a_application = www,shopping-cart,seat-maps
+e_environment = dev,qa,staging
+t_team = mobile,api,cloud
+c_contact = abc@xyz.com,test@xyz.com
