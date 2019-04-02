@@ -66,7 +66,7 @@ for reservation in (response["Reservations"]):
 				print ("{}: {}".format(i+1,"skip"))
 				resp_2 = int(input(": "))
 				if resp_2 != i+1:
-					ec2.create_tags(Resources=[instance["InstanceId"]], Tags=[{'Key':'account', 'Value':account_tags[resp_2]}])
+					ec2.create_tags(Resources=[instance["InstanceId"]], Tags=[{'Key':k, 'Value':Tag_Keys_Values[k][resp_2]}])
 		else:
 			# Clear the instanceTagDict before using it otherwise it will show wrong / old values 
 			instanceTagDict.clear()
