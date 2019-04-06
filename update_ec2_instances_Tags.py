@@ -1,6 +1,8 @@
 # This program will list all tags of an ec2 instance and allow to add / update tags if needed
+# This will also skip instances which has account and environment tags already present
 
-import boto3,sys
+
+import boto3,sys,os
 from pprint import pprint 
 from extractTagKeysValues import extractTagKeysValues
 
@@ -16,26 +18,35 @@ response = ec2.describe_instances()
 # 	output list :
 # 	account = [production,dev,qa]
 
-
-# Uncomment below line if you want to use your own Tag Key values file
 Tag_Data_file = "tags.file.txt"				# Your own file not in Git
 # Tag_Data_file = "tags.file.txt.sample"	# Included with Git
 
-# TODO : Check if Tag_Data_file exist
+# Check if Data File exist before proceed further 
+
+
+if not(os.path.isfile(Tag_Data_file)):
+	print ("\nDate File Error ..... ")
+	print ("\n\"{}\" >>>> Doesn't exist".format(Tag_Data_file))
+	print ("Create this file and add Tag information")
+	print ("\nFor example:")
+	print ("\taccount = production,dev,qa")
+	print ("\tstate = permanent,temporary")
+	print ("\n")
+	sys.exit()
+
 
 Tag_Keys_Values = {}
 # Call the function to extract Tags Key pair value from the tags.file.txt file
 Tag_Keys_Values = extractTagKeysValues(Tag_Data_file)
-#print (Tag_Keys_Values)
+print (Tag_Keys_Values)
 
 instanceTagDict = {}
 for reservation in (response["Reservations"]):
-	#pprint (reservation)
 	for instance in reservation["Instances"]:
 		# Grab the instance ID 
 		# Clear the instanceTagDict before using it otherwise it will show wrong / old values 
 		instanceTagDict.clear()
-		pprint ("Instance ID  {}".format(instance["InstanceId"]))
+		pprint ("-- Instance ID  {}".format(instance["InstanceId"]))
 		
 		if "Tags" in instance: # If no Tags then skip to next instance			
 			pprint ("Number of Tags {}".format(len(instance["Tags"])))
@@ -43,8 +54,8 @@ for reservation in (response["Reservations"]):
 			pprint ("Number of Tags ZERO {}".format(instance["InstanceId"]))
 			continue
 
-		# print all Tags first
-		print ("List of Tags from 6 Categories")
+		# print all existing Tags first
+		print ("List of all Tags ...\n")
 
 		for i in range(0,len(instance["Tags"])):
 			instanceTagDict[instance["Tags"][i]['Key']] = instance["Tags"][i]['Value']
